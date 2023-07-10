@@ -7,11 +7,16 @@ import { BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 
+
+
 @Injectable()
 export class UserService {
 
   constructor(@InjectModel(User.name) private userModel: Model<User>, private jwtService:JwtService) {}
   
+
+  
+
   async createUser(data: CreateUserDto) {
     
     data.email = data.email.toLowerCase()
@@ -32,5 +37,22 @@ export class UserService {
       token
     }
 
+  }
+
+  async login(data: CreateUserDto) {
+    if (!data.email || !data.password ) {
+      throw new BadRequestException('insufficient input')
+    }
+    const thisUser = await this.userModel.findOne({ email: data.email })
+    if (!thisUser) {
+      throw new BadRequestException("no such user found!!")
+    }
+
+     thisUser._checkPassword(data.password)
+    
+    const token = this.jwtService.sign({ id: thisUser._id });
+    return {
+      token
+    }
   }
 }
