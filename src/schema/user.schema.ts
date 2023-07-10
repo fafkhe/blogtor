@@ -23,7 +23,16 @@ export class User {
   _checkPassword: Function
 }
 
-export const UserSchema = SchemaFactory.createForClass(User)
+export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  const salt = genSaltSync(11);
+  const hash = hashSync(this.password, salt);
+  this.password = hash;
+  next();
+
+});
 
 UserSchema.methods = {
   _checkPassword: function (password: string): void {

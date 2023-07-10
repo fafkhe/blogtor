@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
+import * as bcrypt from 'bcrypt';
 
 
 
