@@ -1,5 +1,5 @@
 import { Injectable, Dependencies } from '@nestjs/common';
-import { User } from 'src/schema/user.schema';
+import { User, UserDocument } from 'src/schema/user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dtos/create.user.dto';
@@ -13,9 +13,6 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
 
   constructor(@InjectModel(User.name) private userModel: Model<User>, private jwtService:JwtService) {}
-  
-
-  
 
   async createUser(data: CreateUserDto) {
     
@@ -31,7 +28,7 @@ export class UserService {
     
     const thisUser = await this.userModel.create(data);
 
-    const token = this.jwtService.sign({ id: thisUser._id });
+    const token = this.jwtService.sign({ _id: thisUser._id });
 
     return {
       token
@@ -50,9 +47,16 @@ export class UserService {
 
      thisUser._checkPassword(data.password)
     
-    const token = this.jwtService.sign({ id: thisUser._id });
+    const token = this.jwtService.sign({ _id: thisUser._id });
     return {
       token
     }
+  }
+
+  async findById(_id: string): Promise<UserDocument> {
+    // todo: implement a cach mechanism here later
+    console.log("userModel",this.userModel)
+    const x = await this.userModel.findById(_id);
+    return x;
   }
 }
