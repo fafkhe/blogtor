@@ -7,4 +7,5 @@ export class createBlogDto {
   title: string;
   @IsString()
   content: string;
+
 }

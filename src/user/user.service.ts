@@ -5,14 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-
 
 
 @Injectable()
 export class UserService {
 
   constructor(@InjectModel(User.name) private userModel: Model<User>, private jwtService:JwtService) {}
+  
+
+  
 
   async createUser(data: CreateUserDto) {
     
@@ -34,7 +35,7 @@ export class UserService {
       token
     }
 
-  }
+}
 
   async login(data: CreateUserDto) {
     if (!data.email || !data.password ) {

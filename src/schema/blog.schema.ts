@@ -11,6 +11,9 @@ export type BlogDocument = HydratedDocument<Blog>
 @Schema()
 export class Blog {
   
+  @Prop({required:true})
+  authorId: string;  
+
   @Prop()
   title: string;
 
@@ -18,8 +21,8 @@ export class Blog {
   content: string;
 
 
-  @Prop()
-  imgUrl: string; 
+  // @Prop()
+  // imgUrl: string; 
 
 }
 

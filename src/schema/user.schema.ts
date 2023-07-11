@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { compareSync, hashSync, genSaltSync } from "bcrypt";
-import { BadRequestException, ConsoleLogger } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
 
 
