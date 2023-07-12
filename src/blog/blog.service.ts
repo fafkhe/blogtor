@@ -17,8 +17,11 @@ export class BlogService {
   
     if (!data.title || !data.content) throw new BadRequestException("insufficient input");
     const newBlog = await this.blogModel.create({ ...data, authorId: me._id });
-    
     return newBlog;
   }
 
+  async getAllBlogs() {
+    const blogs = await this.blogModel.find({})
+    return blogs;
+  }
 }
