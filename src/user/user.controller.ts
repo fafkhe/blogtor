@@ -1,7 +1,7 @@
-import { Controller,Get,Post,Delete,Patch ,Body} from '@nestjs/common';
+import { Controller,Get,Post,Delete,Patch ,Body,UseGuards} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create.user.dto';
-
+import { AuthGuard } from 'src/gaurds/auth.gaurd';
 
 
 
@@ -15,12 +15,15 @@ export class UserController {
     return await this.userService.createUser(body);
     
   }
-
-
+  
   @Post("/login")
   async login(@Body() body:CreateUserDto) {
     return await this.userService.login(body);
   }
 
-
+  @UseGuards(AuthGuard)
+  @Get('/alluser')
+  async allUser() {
+    return await this.userService.getAllUser()
+  }
 }

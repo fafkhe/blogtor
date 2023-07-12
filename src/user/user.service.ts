@@ -13,8 +13,6 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>, private jwtService:JwtService) {}
   
 
-  
-
   async createUser(data: CreateUserDto) {
     
     data.email = data.email.toLowerCase()
@@ -26,7 +24,7 @@ export class UserService {
     const existingUser = await this.userModel.findOne({ email: data.email });
 
     if (existingUser) throw new BadRequestException('this User already exist');
-    
+
     const thisUser = await this.userModel.create(data);
 
     const token = this.jwtService.sign({ _id: thisUser._id });
@@ -59,5 +57,10 @@ export class UserService {
     console.log("userModel",this.userModel)
     const x = await this.userModel.findById(_id);
     return x;
+  }
+
+  async getAllUser() {
+    const users = await this.userModel.find({})
+    return users;
   }
 }
