@@ -25,9 +25,10 @@ export class jwtAuthMiddleware implements NestMiddleware {
 
     try {
 
-      const auth = req.headers.auth
+      const auth = req.headers.auth;
 
       if (!auth || typeof auth !== 'string') return next()
+
       const [bearer, token] = auth.split(" ")
 
       if (bearer != "ut") return next()
@@ -42,3 +43,37 @@ export class jwtAuthMiddleware implements NestMiddleware {
   }
 
 }
+
+
+// interface GeoPoint {
+//   lat: number;
+//   lon: number;
+// }
+
+// interface GeoPoint {
+//   address?: string;
+// }
+
+// function printCoords(pt: GeoPoint): void {
+//   console.log(pt.lat)
+//   console.log(pt.lon)
+// }
+
+// printCoords({ lat: 32, lon: 41 });
+// printCoords({ lat: 32, lon: 41, address: "robat karim" });
+
+// const x: GeoPoint = {
+//   lon: 41,
+//   lat: 44,
+//   address: "robat charim"
+// }
+
+type PositiveOddNumberLowerThanTen = 1 | 3 | 5 | 7 | 9;
+
+function generateNumber(): number {
+  return 5
+}
+
+const x = generateNumber()
+const y = generateNumber() as PositiveOddNumberLowerThanTen
+const z = (generateNumber() as any) as string

@@ -6,8 +6,5 @@ import { UnauthorizedException, Injectable,Dependencies } from "@nestjs/common";
 export class AuthService  {
 
   constructor() {}
-  async signup() {
-
   
-  }
 }

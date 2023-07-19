@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog } from 'src/schema/blog.schema';
+import { Blog ,BlogDocument} from 'src/schema/blog.schema';
 import { Model } from 'mongoose';
 import { createBlogDto } from './dto/createBlog.dto';
 import { BadRequestException } from '@nestjs/common';
@@ -10,11 +10,8 @@ import { UserDocument } from 'src/schema/user.schema';
 
 @Injectable()
 export class BlogService {
-
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) { }
-  
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
   async createBlog(data:createBlogDto, me:UserDocument){
-  
     if (!data.title || !data.content) throw new BadRequestException("insufficient input");
     const newBlog = await this.blogModel.create({ ...data, authorId: me._id });
     return newBlog;
@@ -23,5 +20,20 @@ export class BlogService {
   async getAllBlogs() {
     const blogs = await this.blogModel.find({})
     return blogs;
+  }
+
+  async updateBlogs(_id: string, data: createBlogDto, me: UserDocument): Promise<BlogDocument> {
+    const blog = await this.blogModel.findById(_id)
+    if (!blog) {
+      throw new  BadRequestException("no such blog found")
+    }
+
+   
+    console.log(me._id)
+    blog._checkIfImAuthor(me);
+
+    const editedBlog = await this.blogModel.findByIdAndUpdate(blog._id, data);
+    return editedBlog;
+  
   }
 }

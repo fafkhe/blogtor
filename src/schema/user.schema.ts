@@ -36,7 +36,6 @@ UserSchema.pre("save", async function (next) {
 
 UserSchema.methods = {
   _checkPassword: function (password: string): void {
-
     if (!compareSync(password, this.password))
       throw new BadRequestException("password does not match!")
   
