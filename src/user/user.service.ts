@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { updateUserDto } from './dtos/updateUser.dto';
 
 
 @Injectable()
@@ -68,8 +69,15 @@ export class UserService {
   async getSingleUser(_id:string) {
     const user = await this.userModel.findById(_id);
     if (!user) {
-      throw  new BadRequestException("there is no user with this ID")
+      throw  new BadRequestException("there is no user with this ID!!")
     }
     return user;
+  }
+
+  async updateMe(data:updateUserDto, me:UserDocument) {
+    const editedUser = await this.userModel.findByIdAndUpdate(me._id, data);
+    return {
+      msg:"successfully updated your data!!"
+    } 
   }
 }
