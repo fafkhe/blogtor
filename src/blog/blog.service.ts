@@ -27,13 +27,16 @@ export class BlogService {
     if (!blog) {
       throw new  BadRequestException("no such blog found")
     }
-
-   
-    console.log(me._id)
     blog._checkIfImAuthor(me);
-
     const editedBlog = await this.blogModel.findByIdAndUpdate(blog._id, data);
     return editedBlog;
   
+  }
+  async getSingleBlog(_id:string) {
+    const singleBlog = await this.blogModel.findById(_id)
+    if (!singleBlog) {
+      throw new BadRequestException("no such blog found!!")
+    }
+    return singleBlog;
   }
 }

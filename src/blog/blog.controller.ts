@@ -29,4 +29,10 @@ export class BlogController {
    
     return this.blogService.updateBlogs(_id,body,me)
   }
+
+  @UseGuards(AuthGuard)
+  @Get("/:id")
+  getSingleBlog(@Param("id") _id:string) {
+    return this.blogService.getSingleBlog(_id);
+  }
 }
