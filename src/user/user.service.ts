@@ -63,4 +63,13 @@ export class UserService {
     const users = await this.userModel.find({})
     return users;
   }
+
+
+  async getSingleUser(_id:string) {
+    const user = await this.userModel.findById(_id);
+    if (!user) {
+      throw  new BadRequestException("there is no user with this ID")
+    }
+    return user;
+  }
 }

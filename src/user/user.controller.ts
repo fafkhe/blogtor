@@ -1,4 +1,4 @@
-import { Controller,Get,Post,Delete,Patch ,Body,UseGuards} from '@nestjs/common';
+import { Controller,Get,Post,Delete,Patch ,Body,UseGuards,Param} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { AuthGuard } from 'src/gaurds/auth.gaurd';
@@ -25,5 +25,10 @@ export class UserController {
   @Get('/alluser')
   async allUser() {
     return await this.userService.getAllUser()
+  }
+
+  @Get("/:id")
+  async singleUser(@Param('id') _id: string) {
+    return await this.userService.getSingleUser(_id)
   }
 }
