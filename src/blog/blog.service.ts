@@ -39,4 +39,16 @@ export class BlogService {
     }
     return singleBlog;
   }
+  async deleteBlog(_id: string , me :UserDocument) {
+    const blog = await this.blogModel.findById(_id);
+    if (!blog) {
+      throw new BadRequestException("no such blog found!!")
+    }
+    blog._checkIfImAuthor(me)
+    const thisBlog = await this.blogModel.findByIdAndDelete(blog._id)
+    return {
+      msg:"success"
+    }
+  }
+
 }

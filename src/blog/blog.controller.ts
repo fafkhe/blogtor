@@ -23,8 +23,8 @@ export class BlogController {
     return this.blogService.getAllBlogs();
   }
 
-  @Patch("/:id")
   @UseGuards(AuthGuard)
+  @Patch("/:id")
   updateBlogs(@Param('id') _id: string,@Body() body:createBlogDto, @Me() me:UserDocument,) {
    
     return this.blogService.updateBlogs(_id,body,me)
@@ -34,5 +34,12 @@ export class BlogController {
   @Get("/:id")
   getSingleBlog(@Param("id") _id:string) {
     return this.blogService.getSingleBlog(_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete("/:id")
+  deleteBlog(@Me() me: UserDocument, @Param("id") _id:string) {
+    return this.blogService.deleteBlog(_id,me);
+    
   }
 }
