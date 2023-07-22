@@ -47,8 +47,18 @@ export class BlogService {
     blog._checkIfImAuthor(me)
     const thisBlog = await this.blogModel.findByIdAndDelete(blog._id)
     return {
-      msg:"success"
+      msg: "success..."
     }
+  }
+
+
+ async getMyBlogs( me:UserDocument) {
+    
+   const myBlogs = await this.blogModel.find({ authorId: me._id }) 
+   if (!myBlogs) {
+     throw new BadRequestException("no such blogs exist for this User ")
+    }
+    return myBlogs;
   }
 
 }

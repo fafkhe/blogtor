@@ -38,7 +38,7 @@ export class UserService {
 
   async login(data: CreateUserDto) {
     if (!data.email || !data.password ) {
-      throw new BadRequestException('insufficient input')
+      throw new BadRequestException('insufficient input') 
     }
     const thisUser = await this.userModel.findOne({ email: data.email })
     if (!thisUser) {
@@ -66,7 +66,9 @@ export class UserService {
   }
 
 
-  async getSingleUser(_id:string) {
+  async getSingleUser(_id: string) {
+    console.log(_id);
+    console.log("oooooooooo");
     const user = await this.userModel.findById(_id);
     if (!user) {
       throw  new BadRequestException("there is no user with this ID!!")

@@ -31,7 +31,7 @@ export class BlogController {
   }
 
   @UseGuards(AuthGuard)
-  @Get("/:id")
+  @Get("id")
   getSingleBlog(@Param("id") _id:string) {
     return this.blogService.getSingleBlog(_id);
   }
@@ -41,5 +41,13 @@ export class BlogController {
   deleteBlog(@Me() me: UserDocument, @Param("id") _id:string) {
     return this.blogService.deleteBlog(_id,me);
     
+  }
+
+  @UseGuards(AuthGuard)
+  @Get("my-blogs")
+  getMyblogs(@Me() me: UserDocument) {
+    console.log("............");
+    console.log(me)
+    return this.blogService.getMyBlogs(me)
   }
 }

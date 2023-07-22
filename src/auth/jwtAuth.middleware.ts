@@ -22,6 +22,7 @@ export class jwtAuthMiddleware implements NestMiddleware {
   constructor(private readonly jwtService: JwtService) { }
   
   use(req: Request, res: Response, next: NextFunction) {
+    console.log("start of middleware")
 
     try {
 
@@ -30,50 +31,20 @@ export class jwtAuthMiddleware implements NestMiddleware {
       if (!auth || typeof auth !== 'string') return next()
 
       const [bearer, token] = auth.split(" ")
+      console.log(token)
 
       if (bearer != "ut") return next()
 
       req.requester = this.jwtService.verify(token)
+      // console.log("/////////",req.requester)
 
     } catch (error) {
 
       req.requester = null;
     }
+    console.log("////",req.requester)
     next();
   }
 
 }
 
-
-// interface GeoPoint {
-//   lat: number;
-//   lon: number;
-// }
-
-// interface GeoPoint {
-//   address?: string;
-// }
-
-// function printCoords(pt: GeoPoint): void {
-//   console.log(pt.lat)
-//   console.log(pt.lon)
-// }
-
-// printCoords({ lat: 32, lon: 41 });
-// printCoords({ lat: 32, lon: 41, address: "robat karim" });
-
-// const x: GeoPoint = {
-//   lon: 41,
-//   lat: 44,
-//   address: "robat charim"
-// }
-
-type PositiveOddNumberLowerThanTen = 1 | 3 | 5 | 7 | 9;
-
-function generateNumber(): number {
-  return 5
-}
-
-const x = generateNumber()
-const y = generateNumber() as PositiveOddNumberLowerThanTen
-const z = (generateNumber() as any) as string

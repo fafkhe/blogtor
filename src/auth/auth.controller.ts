@@ -9,10 +9,13 @@ import { UserService } from 'src/user/user.service';
 export class AuthController {
 
    constructor(private userService :UserService ) {}
-  @Get('me')
-  @UseGuards(AuthGuard)
-  me(@Me() me:UserDocument) {
+   @Get('me')
+   @UseGuards(AuthGuard)
+   me(@Me() me: UserDocument) {
+     console.log("1111111111111");
+     console.log(me);
     return me;
+
   }
   @Post('update-me')
   @UseGuards(AuthGuard)
