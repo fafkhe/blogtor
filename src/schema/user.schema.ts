@@ -2,6 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { compareSync, hashSync, genSaltSync } from "bcrypt";
 import { BadRequestException } from '@nestjs/common';
+import { Exclude } from 'class-transformer';
+
 
 
 
@@ -18,6 +20,7 @@ export class User {
   
 
   @Prop()
+  @Exclude()
   password: string;
   
   _checkPassword: Function

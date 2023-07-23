@@ -22,7 +22,7 @@ export class jwtAuthMiddleware implements NestMiddleware {
   constructor(private readonly jwtService: JwtService) { }
   
   use(req: Request, res: Response, next: NextFunction) {
-    console.log("start of middleware")
+   
 
     try {
 
@@ -31,18 +31,17 @@ export class jwtAuthMiddleware implements NestMiddleware {
       if (!auth || typeof auth !== 'string') return next()
 
       const [bearer, token] = auth.split(" ")
-      console.log(token)
+     
 
       if (bearer != "ut") return next()
 
       req.requester = this.jwtService.verify(token)
-      // console.log("/////////",req.requester)
-
+      
     } catch (error) {
 
       req.requester = null;
     }
-    console.log("////",req.requester)
+   
     next();
   }
 

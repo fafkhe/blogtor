@@ -55,7 +55,6 @@ export class UserService {
 
   async findById(_id: string): Promise<UserDocument> {
     // todo: implement a cach mechanism here later
-    console.log("userModel",this.userModel)
     const x = await this.userModel.findById(_id);
     return x;
   }
@@ -67,8 +66,7 @@ export class UserService {
 
 
   async getSingleUser(_id: string) {
-    console.log(_id);
-    console.log("oooooooooo");
+   
     const user = await this.userModel.findById(_id);
     if (!user) {
       throw  new BadRequestException("there is no user with this ID!!")

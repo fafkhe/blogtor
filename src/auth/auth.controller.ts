@@ -12,8 +12,7 @@ export class AuthController {
    @Get('me')
    @UseGuards(AuthGuard)
    me(@Me() me: UserDocument) {
-     console.log("1111111111111");
-     console.log(me);
+    
     return me;
 
   }
