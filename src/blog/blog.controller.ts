@@ -1,9 +1,10 @@
-import { Controller,Post, Get,Delete,Patch, UseGuards, Body, Param } from '@nestjs/common';
+import { Controller,Post, Get,Delete,Patch, UseGuards, Body, Param,Query } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { AuthGuard } from 'src/gaurds/auth.gaurd';
 import { Me } from 'src/decorators/me.decorator';
 import { UserDocument } from 'src/schema/user.schema';
 import { createBlogDto } from './dto/createBlog.dto';
+import { query } from 'express';
 
 
 
@@ -19,12 +20,12 @@ export class BlogController {
 
   @Get('/blogs')
   @UseGuards(AuthGuard)
-  getAllBlogs() {
-    return this.blogService.getAllBlogs();
+  getAllBlogs(@Query()  {limit, page}) {
+    return this.blogService.getAllBlogs(limit,page);
   }
 
   @UseGuards(AuthGuard)
-  @Patch("/:id")
+  @Patch("/update/:id")
   updateBlogs(@Param('id') _id: string,@Body() body:createBlogDto, @Me() me:UserDocument,) {
    
     return this.blogService.updateBlogs(_id,body,me)
@@ -45,8 +46,8 @@ export class BlogController {
 
   @UseGuards(AuthGuard)
   @Get("my-blogs")
-  getMyblogs(@Me() me: UserDocument) {
+  getMyblogs(@Me() me: UserDocument,@Query() {page, limit}) {
    
-    return this.blogService.getMyBlogs(me)
+    return this.blogService.getMyBlogs(me,page,limit)
   }
 }

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog ,BlogDocument} from 'src/schema/blog.schema';
 import { Model } from 'mongoose';
 import { createBlogDto } from './dto/createBlog.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { UserDocument } from 'src/schema/user.schema';
 
 
@@ -16,49 +16,70 @@ export class BlogService {
     const newBlog = await this.blogModel.create({ ...data, authorId: me._id });
     return newBlog;
   }
-
-  async getAllBlogs() {
-    const blogs = await this.blogModel.find({})
-    return blogs;
+  
+  async getAllBlogs(limit:1,page:1) {
+    const count = await this.blogModel.countDocuments({}).exec();
+    const total = Math.floor((count - 1) / limit) + 1;
+    const allBlogs = await this.blogModel.find().limit(limit).skip(page).exec();
+    return {
+      data: allBlogs,
+      page_total:total,
+    }
+    
+   
   }
 
   async updateBlogs(_id: string, data: createBlogDto, me: UserDocument): Promise<BlogDocument> {
     const blog = await this.blogModel.findById(_id)
-    if (!blog) {
-      throw new  BadRequestException("no such blog found")
-    }
+    if (!blog) throw new  BadRequestException("no such blog found")
+    
     blog._checkIfImAuthor(me);
     const editedBlog = await this.blogModel.findByIdAndUpdate(blog._id, data);
     return editedBlog;
   
   }
-  async getSingleBlog(_id:string) {
-    const singleBlog = await this.blogModel.findById(_id)
-    if (!singleBlog) {
-      throw new BadRequestException("no such blog found!!")
+  async getSingleBlog(_id: string) {
+    
+    try {
+
+      const singleBlog = await this.blogModel.findById(_id)
+      if (!singleBlog) throw new BadRequestException("no such blog found!!")
+      
+      return singleBlog;
+    } catch (error) {
+
+      const obj = {
+        'CastError': new BadRequestException("no such blog found!!"),
+      }
+
+      throw obj[error.name] || new InternalServerErrorException('oops,this is our fault') 
+
     }
-    return singleBlog;
   }
   async deleteBlog(_id: string , me :UserDocument) {
     const blog = await this.blogModel.findById(_id);
-    if (!blog) {
-      throw new BadRequestException("no such blog found!!")
-    }
+    if (!blog) throw new BadRequestException("no such blog found!!")
     blog._checkIfImAuthor(me)
-    const thisBlog = await this.blogModel.findByIdAndDelete(blog._id)
+    await this.blogModel.findByIdAndDelete(blog._id)
     return {
       msg: "success..."
     }
   }
 
 
- async getMyBlogs( me:UserDocument) {
-    
-   const myBlogs = await this.blogModel.find({ authorId: me._id }) 
+ async getMyBlogs( me:UserDocument, page:number, limit:number) {
+   
+   // implement lazy load mechanism here , for the love of god
+    const count = await this.blogModel.countDocuments({}).exec();
+    const total = Math.floor((count - 1) / limit) + 1;
+   
+   const myBlogs = await this.blogModel.find({ authorId: me._id }).limit(limit).skip(page).exec();
    if (!myBlogs) {
      throw new BadRequestException("no such blogs exist for this User ")
     }
-    return myBlogs;
+   return {
+     data: myBlogs,
+     page_total: total
+   }
   }
-
 }

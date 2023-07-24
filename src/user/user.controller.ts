@@ -33,7 +33,7 @@ export class UserController {
   
   @UseInterceptors(SerializeInterceptor)
   @Get("/:id")
-   singleUser(@Param('id') _id:string) {
-    return  this.userService.getSingleUser(_id)
+  singleUser(@Param('id') _id:string) {
+    return this.userService.getSingleUser(_id)
   }
 }
