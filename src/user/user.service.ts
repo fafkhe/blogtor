@@ -3,7 +3,7 @@ import { User, UserDocument } from 'src/schema/user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dtos/create.user.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException,InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { updateUserDto } from './dtos/updateUser.dto';
 
@@ -67,11 +67,19 @@ export class UserService {
 
   async getSingleUser(_id: string) {
    
-    const user = await this.userModel.findById(_id);
-    if (!user) {
-      throw  new BadRequestException("there is no user with this ID!!")
+    try {
+      const user = await this.userModel.findById(_id);
+      if (!user) {
+        throw new BadRequestException("there is no user with this ID!!")
+      }
+      return user
+    } catch(error) {
+
+      const obj = {
+        'CastError': new BadRequestException("no such user found!!")
+      }
+      throw obj[error.name] || new InternalServerErrorException('oops,this is our fault') 
     }
-    return user;
   }
 
   async updateMe(data:updateUserDto, me:UserDocument) {

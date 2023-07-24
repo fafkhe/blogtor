@@ -17,7 +17,7 @@ export class BlogService {
     return newBlog;
   }
   
-  async getAllBlogs(limit:1,page:1) {
+  async getAllBlogs(limit:8,page:0) {
     const count = await this.blogModel.countDocuments({}).exec();
     const total = Math.floor((count - 1) / limit) + 1;
     const allBlogs = await this.blogModel.find().limit(limit).skip(page).exec();
@@ -30,12 +30,20 @@ export class BlogService {
   }
 
   async updateBlogs(_id: string, data: createBlogDto, me: UserDocument): Promise<BlogDocument> {
-    const blog = await this.blogModel.findById(_id)
-    if (!blog) throw new  BadRequestException("no such blog found")
+    try {
+      const blog = await this.blogModel.findById(_id)
+      if (!blog) throw new BadRequestException("no such blog found")
     
-    blog._checkIfImAuthor(me);
-    const editedBlog = await this.blogModel.findByIdAndUpdate(blog._id, data);
-    return editedBlog;
+      blog._checkIfImAuthor(me);
+      const editedBlog = await this.blogModel.findByIdAndUpdate(blog._id, data);
+      return editedBlog;
+    } catch(error) {
+
+      const obj = { 
+        'CastError': new BadRequestException("no such blog found")
+      }
+      throw obj[error.name] || new InternalServerErrorException("oops,this is our fault")
+    }
   
   }
   async getSingleBlog(_id: string) {
@@ -69,7 +77,6 @@ export class BlogService {
 
  async getMyBlogs( me:UserDocument, page:number, limit:number) {
    
-   // implement lazy load mechanism here , for the love of god
     const count = await this.blogModel.countDocuments({}).exec();
     const total = Math.floor((count - 1) / limit) + 1;
    
