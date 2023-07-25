@@ -1,11 +1,11 @@
 import {
-  Controller, Get, Post, Delete, Patch, Body, UseGuards, Param,
-  UseInterceptors, ClassSerializerInterceptor,Query
+  Controller, Get, Post, Delete, Patch, Body, UseGuards, Param,Query
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { AuthGuard } from 'src/gaurds/auth.gaurd';
-import { SerializeInterceptor } from 'src/interceptors/serialize.interceptors';
+import { Serialize } from 'src/interceptors/serialize.interceptors';
+import { UserDto } from './dtos/user.dto';
 
 
 
@@ -25,14 +25,14 @@ export class UserController {
     return  this.userService.login(body);
   }
 
-  @UseInterceptors(SerializeInterceptor)
+  @Serialize(UserDto)
   @UseGuards(AuthGuard)
   @Get('/alluser')
   allUser(@Query() {page,limit}) {
     return this.userService.getAllUser(page, limit);
   }
   
-  @UseInterceptors(SerializeInterceptor)
+  @Serialize(UserDto)
   @Get("/:id")
   singleUser(@Param('id') _id:string) {
     return this.userService.getSingleUser(_id)
