@@ -15,8 +15,6 @@ export class Blog {
   @Prop()
   content: string;
 
-
-  
   @Prop({ type: MongooseSchema.Types.ObjectId , ref: 'User' })
   user: Types.ObjectId
   

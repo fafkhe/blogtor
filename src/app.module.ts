@@ -5,10 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
+import { CommentsModule } from './comments/comments.module';
 
 
 @Module({
-  imports: [ MongooseModule.forRoot('mongodb://localhost/blogtor'), UserModule, AuthModule, BlogModule],
+  imports: [ MongooseModule.forRoot('mongodb://localhost/blogtor'), UserModule, AuthModule, BlogModule, CommentsModule],
   controllers: [AppController],
   providers: [AppService],
 })
