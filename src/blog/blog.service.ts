@@ -13,17 +13,17 @@ export class BlogService {
   constructor(@InjectModel(Blog.name) private blogModel: Model<Blog>) {}
   async createBlog(data:createBlogDto, me:UserDocument){
     if (!data.title || !data.content) throw new BadRequestException("insufficient input");
-    const newBlog = await this.blogModel.create({ ...data, authorId: me._id });
+    const newBlog = await this.blogModel.create({ ...data, user: me._id });
+    console.log("me", me)
     return newBlog;
   }
   
   async getAllBlogs(limit:8,page:0) {
-    const count = await this.blogModel.countDocuments({}).exec();
-    const total = Math.floor((count - 1) / limit) + 1;
-    const allBlogs = await this.blogModel.find().limit(limit).skip(page).exec();
+    const count = await this.blogModel.find({}).countDocuments().exec();
+    const allBlogs = await this.blogModel.find().limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();
     return {
       data: allBlogs,
-      page_total:total,
+      total:count,
     }
     
    
@@ -50,7 +50,8 @@ export class BlogService {
     
     try {
 
-      const singleBlog = await this.blogModel.findById(_id)
+      const singleBlog = await this.blogModel.findById(_id).populate({ path: "user", select:{password:0 , __v:0}}).exec()
+      console.log("single", singleBlog);
       if (!singleBlog) throw new BadRequestException("no such blog found!!")
       
       return singleBlog;
@@ -77,16 +78,16 @@ export class BlogService {
 
  async getMyBlogs( me:UserDocument, page:number, limit:number) {
    
-    const count = await this.blogModel.countDocuments({}).exec();
-    const total = Math.floor((count - 1) / limit) + 1;
    
-   const myBlogs = await this.blogModel.find({ authorId: me._id }).limit(limit).skip(page).exec();
+    const count = await this.blogModel.find({user: me._id}).countDocuments();
+   
+   const myBlogs = await this.blogModel.find({ user: me._id }).limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();;
    if (!myBlogs) {
      throw new BadRequestException("no such blogs exist for this User ")
     }
    return {
      data: myBlogs,
-     page_total: total
+     total: count
    }
   }
 }

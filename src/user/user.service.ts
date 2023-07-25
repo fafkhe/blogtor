@@ -59,16 +59,23 @@ export class UserService {
     return x;
   }
 
-  async getAllUser() {
-    const users = await this.userModel.find({})
-    return users;
+  async getAllUser(limit:8,page:1) {
+    
+    const count = await this.userModel.countDocuments({}).exec();
+    const total = Math.floor((count - 1) / limit) + 1;
+    const users = await this.userModel.find().limit(limit).skip(page).exec();
+    console.log(users,"users")
+    return {
+      data: users,
+      page_total: total
+      }
   }
 
 
   async getSingleUser(_id: string) {
    
     try {
-      const user = await this.userModel.findById(_id);
+      const user = await this.userModel.findById(_id)
       if (!user) {
         throw new BadRequestException("there is no user with this ID!!")
       }
