@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException ,Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment } from 'src/schema/comment.schema';
 import { Model } from 'mongoose';
@@ -21,7 +21,7 @@ export class CommentsService {
       if (!data.text.trim()) throw new BadRequestException("text is required");
       const thisBlog = await this.blogModel.findById(data.blogId);
       if (!thisBlog) throw new BadRequestException("no such blog found!!");
-      await this.commenModel.create({ text: data.text, blogId: thisBlog._id, user: me._id });
+      await this.commenModel.create({ text: data.text, blogId: thisBlog._id, userId: me._id });
     
       return "ok success"
 
@@ -29,6 +29,22 @@ export class CommentsService {
       console.log(error)
       if (error.name === "CastError") throw new BadRequestException("no such blog found");
       throw error
+    }
+
+  }
+
+  async getComments(_id: string , page:1 , limit:8) {
+    
+    const thisBlog = await this.blogModel.findById(_id);
+    if (!thisBlog) throw new BadRequestException("no such blog found!!");
+    const count = await this.commenModel.countDocuments({}).exec();
+
+    const comments = await this.commenModel.find({ blogId: _id }).limit(limit).skip(page).populate({ path: "user", select: { password: 0, __v: 0 } }).exec();
+
+
+    return {
+      data: comments,
+      total:count,
     }
 
   }

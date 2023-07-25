@@ -90,7 +90,7 @@ export class UserService {
   }
 
   async updateMe(data:updateUserDto, me:UserDocument) {
-    const editedUser = await this.userModel.findByIdAndUpdate(me._id, data);
+     await this.userModel.findByIdAndUpdate(me._id, data);
     return {
       msg:"successfully updated your data!!"
     } 

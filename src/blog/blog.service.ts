@@ -81,7 +81,7 @@ export class BlogService {
    
     const count = await this.blogModel.find({user: me._id}).countDocuments();
    
-   const myBlogs = await this.blogModel.find({ user: me._id }).limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();;
+   const myBlogs = await this.blogModel.find({ user: me._id }).limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();
    if (!myBlogs) {
      throw new BadRequestException("no such blogs exist for this User ")
     }

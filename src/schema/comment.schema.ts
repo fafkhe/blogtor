@@ -1,5 +1,6 @@
 import { Prop,Schema,SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Schema as MongooseSchema,Types } from 'mongoose';
+
 
 
 
@@ -18,6 +19,9 @@ export class Comment{
 
   @Prop()
   blogId: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId , ref: 'User' })
+  user: Types.ObjectId
 
 }
 

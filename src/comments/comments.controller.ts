@@ -1,4 +1,4 @@
-import { Body, Controller, Param,UseGuards } from '@nestjs/common';
+import { Body, Controller, Param,UseGuards, Get , Query } from '@nestjs/common';
 import { Post } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { submitCommentsDto } from './dtos/createComments.dto';
@@ -20,7 +20,14 @@ export class CommentsController {
   
     return this.CommentsService.submitComments(body, me);
 
+  }
+
+  @Get("/:id")
+  @UseGuards(AuthGuard)
+  getComment(@Param("id") _id:string, @Query() {page, limit}  ) {
     
+    return this.CommentsService.getComments(_id, page, limit)
+
   }
 
 }
