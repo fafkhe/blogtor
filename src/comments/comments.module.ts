@@ -6,7 +6,6 @@ import { Comment, CommentSchema } from 'src/schema/comment.schema';
 import { BlogModule } from 'src/blog/blog.module';
 import { Blog , BlogSchema } from 'src/schema/blog.schema';
 import { AuthModule } from 'src/auth/auth.module';
-import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
 
 
