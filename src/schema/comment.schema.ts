@@ -14,8 +14,6 @@ export class Comment{
   @Prop()
   text: string;
 
-  @Prop()
-  userId: string;
 
   @Prop()
   blogId: string;

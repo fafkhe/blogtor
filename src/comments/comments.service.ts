@@ -21,7 +21,9 @@ export class CommentsService {
       if (!data.text.trim()) throw new BadRequestException("text is required");
       const thisBlog = await this.blogModel.findById(data.blogId);
       if (!thisBlog) throw new BadRequestException("no such blog found!!");
-      await this.commenModel.create({ text: data.text, blogId: thisBlog._id, userId: me._id });
+      await this.commenModel.create({ ...data, user: me._id });
+      console.log(me._id);
+      console.log(data.blogId)
     
       return "ok success"
 
