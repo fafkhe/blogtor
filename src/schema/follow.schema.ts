@@ -6,7 +6,7 @@ export type Followdocument = HydratedDocument<Follow>;
 
 
 @Schema()
-export class Follow{
+export class Follow {
 
 
 
