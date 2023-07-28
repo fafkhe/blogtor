@@ -3,7 +3,6 @@ import { FollowService } from './follow.service';
 import { Me } from 'src/decorators/me.decorator';
 import { UserDocument } from 'src/schema/user.schema';
 import { AuthGuard } from 'src/gaurds/auth.gaurd';
-import { FollowDto } from './dtos/follow.dto';
 
 
 

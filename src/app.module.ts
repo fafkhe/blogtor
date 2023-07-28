@@ -7,10 +7,11 @@ import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
 import { CommentsModule } from './comments/comments.module';
 import { FollowModule } from './follow/follow.module';
+import { LikeModule } from './like/like.module';
 
 
 @Module({
-  imports: [ MongooseModule.forRoot('mongodb://localhost/blogtor'), UserModule, AuthModule, BlogModule, CommentsModule, FollowModule],
+  imports: [ MongooseModule.forRoot('mongodb://localhost/blogtor'), UserModule, AuthModule, BlogModule, CommentsModule, FollowModule, LikeModule],
   controllers: [AppController],
   providers: [AppService],
 })
