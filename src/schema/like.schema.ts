@@ -17,6 +17,8 @@ export class Like {
   @Prop()
   blogId: Types.ObjectId;
 
+  
+
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);

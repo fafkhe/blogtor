@@ -1,13 +1,13 @@
 import { Expose } from "class-transformer";
 
-export class UserDto {
+export class blogDto {
   @Expose()
   id:string
   @Expose()
-  name: string
+  totle: string
   @Expose()
-  email: string;
+  content: string;
 
   @Expose()
-  followerCount: number
+  likeCount: number
  }

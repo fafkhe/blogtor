@@ -6,12 +6,18 @@ import { CreateUserDto } from './dtos/create.user.dto';
 import { BadRequestException,InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { updateUserDto } from './dtos/updateUser.dto';
+import { ExtendedUserDocument } from 'src/schema/user.schema';
+import { Follow } from 'src/schema/follow.schema';
 
 
 @Injectable()
 export class UserService {
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>, private jwtService:JwtService) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private jwtService: JwtService,
+    @InjectModel(Follow.name) private followModel: Model<Follow>
+  ) { }
   
 
   async createUser(data: CreateUserDto) {
@@ -75,10 +81,15 @@ export class UserService {
   async getSingleUser(_id: string) {
    
     try {
-      const user = await this.userModel.findById(_id)
+      const user = await this.userModel.findById(_id) as ExtendedUserDocument 
+
       if (!user) {
         throw new BadRequestException("there is no user with this ID!!")
       }
+
+
+      user.followerCount = await this.followModel.find({ followeeId: user._id }).countDocuments()
+
       return user
     } catch(error) {
 

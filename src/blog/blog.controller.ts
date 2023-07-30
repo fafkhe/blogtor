@@ -4,8 +4,9 @@ import { AuthGuard } from 'src/gaurds/auth.gaurd';
 import { Me } from 'src/decorators/me.decorator';
 import { UserDocument } from 'src/schema/user.schema';
 import { createBlogDto } from './dto/createBlog.dto';
-import { query } from 'express';
-
+import { Serialize } from 'src/interceptors/serialize.interceptors';
+import { blogDto } from './dto/blog.dto';
+// import { serialize } from 'v8';
 
 
 @Controller('blog')
@@ -31,6 +32,7 @@ export class BlogController {
     return this.blogService.updateBlogs(_id,body,me)
   }
 
+  @Serialize(blogDto)
   @UseGuards(AuthGuard)
   @Get("/single/:id")
   getSingleBlog(@Param("id") _id:string) {

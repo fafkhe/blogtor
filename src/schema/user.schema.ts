@@ -7,6 +7,11 @@ import { BadRequestException } from '@nestjs/common';
 
 export type UserDocument = HydratedDocument<User>;
 
+export interface ExtendedUserDocument extends UserDocument {
+  followerCount: number
+}
+
+
 @Schema()
 export class User {
   

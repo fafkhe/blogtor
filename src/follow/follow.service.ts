@@ -22,17 +22,19 @@ export class FollowService {
 
       const thisFollow = await this.followModel.findOne({ followerId: me._id, followeeId: thisUser._id })
   
+      const amIfollowing = Boolean(thisFollow)
   
-      if (!thisFollow ) {
-        this.followModel.create({ followerId: me._id, followeeId: thisUser._id });
+      if (!amIfollowing) {
+        await this.followModel.create({ followerId: me._id, followeeId: thisUser._id });
       } else {
         await this.followModel.findByIdAndDelete(thisFollow._id);
       }
   
-      return "ok"
+      return amIfollowing ? 'successfully unfollowed this user' : 'successfully followed this user'
     
     } catch (error) {
       console.log(error.name)
+      console.log(error)
       
     }
   }

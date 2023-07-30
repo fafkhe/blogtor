@@ -6,6 +6,10 @@ import { UserDocument } from 'src/schema/user.schema';
 
 export type BlogDocument = HydratedDocument<Blog>
 
+export interface ExtendedBlogDocument extends BlogDocument {
+  likeCount: number
+}
+
 @Schema()
 export class Blog {
 
