@@ -8,10 +8,27 @@ import { BlogModule } from './blog/blog.module';
 import { CommentsModule } from './comments/comments.module';
 import { FollowModule } from './follow/follow.module';
 import { LikeModule } from './like/like.module';
-
+import { ConfigModule, ConfigService } from '@nestjs/config'
 
 @Module({
-  imports: [ MongooseModule.forRoot('mongodb://localhost/blogtor'), UserModule, AuthModule, BlogModule, CommentsModule, FollowModule, LikeModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        uri: config.get<string>('DB_URI')
+      })
+    }),
+    UserModule,
+    AuthModule,
+    BlogModule,
+    CommentsModule,
+    FollowModule,
+    LikeModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
