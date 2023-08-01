@@ -20,6 +20,7 @@ export class UserController {
     
   }
   
+
   @Post("/login")
    login(@Body() body:CreateUserDto) {
     return  this.userService.login(body);
@@ -35,6 +36,12 @@ export class UserController {
   @Serialize(UserDto)
   @Get("/:id")
   singleUser(@Param('id') _id:string) {
-    return this.userService.getSingleUser(_id)
+    return this.userService.findById(_id)
   }
+
+  @Get("/cache/clear")
+  clearCache() {
+    return this.userService.clearCache()
+  }
+  
 }

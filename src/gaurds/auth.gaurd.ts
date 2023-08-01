@@ -17,8 +17,6 @@ export class AuthGuard implements CanActivate {
 
     const thisUser = await this.userService.findById(requester._id)
   
-   
-
  
     if (!thisUser) return false;  
     request.me = thisUser

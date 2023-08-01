@@ -20,9 +20,11 @@ export class FollowService {
       const thisUser = await this.userModel.findById(_id);
       if (!thisUser) throw new BadRequestException("no such user found");
 
-      const thisFollow = await this.followModel.findOne({ followerId: me._id, followeeId: thisUser._id })
-  
-      const amIfollowing = Boolean(thisFollow)
+      if (String(thisUser._id) === String(me._id)) throw new BadRequestException("you can not follow yourself!!!");
+      
+      const thisFollow = await this.followModel.findOne({ followerId: me._id, followeeId: thisUser._id });
+      
+      const amIfollowing = Boolean(thisFollow);
   
       if (!amIfollowing) {
         await this.followModel.create({ followerId: me._id, followeeId: thisUser._id });

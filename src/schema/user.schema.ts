@@ -37,6 +37,18 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre("save", async function (next) {
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
+  console.log("pre save is called")
   if (!this.isModified("password")) return next();
   const salt = genSaltSync(11);
   const hash = hashSync(this.password, salt);

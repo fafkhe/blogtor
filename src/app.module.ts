@@ -8,7 +8,14 @@ import { BlogModule } from './blog/blog.module';
 import { CommentsModule } from './comments/comments.module';
 import { FollowModule } from './follow/follow.module';
 import { LikeModule } from './like/like.module';
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { redisStore } from "cache-manager-redis-store";
+import { CacheModule } from '@nestjs/cache-manager';
+import { config } from 'dotenv';
+
+
+config();
+
 
 @Module({
   imports: [
@@ -20,6 +27,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
         uri: config.get<string>('DB_URI')
+      })
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      inject: [ConfigService],
+      store: (): any => redisStore({
+        commandsQueueMaxLength: 10_000,
+        socket: {
+          host: process.env.REDIS_HOST,
+          port: process.env.REDIS_PORT as any,
+        }
       })
     }),
     UserModule,

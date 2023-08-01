@@ -1,4 +1,4 @@
-import { Injectable, Dependencies } from '@nestjs/common';
+import { Injectable, Dependencies ,Inject } from '@nestjs/common';
 import { User, UserDocument } from 'src/schema/user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,6 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { updateUserDto } from './dtos/updateUser.dto';
 import { ExtendedUserDocument } from 'src/schema/user.schema';
 import { Follow } from 'src/schema/follow.schema';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 
 @Injectable()
@@ -16,9 +18,33 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
-    @InjectModel(Follow.name) private followModel: Model<Follow>
+    @InjectModel(Follow.name) private followModel: Model<Follow>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) { }
   
+
+  async readSingleUserFromCache(_id: string):Promise<ExtendedUserDocument | null >  {
+    
+    try {
+      let target = `user-${String(_id)}`
+      console.log(target,"//////////////")
+      let thisUser = await this.cacheManager.get(target) as ExtendedUserDocument
+
+      if (!thisUser) {
+        thisUser = await this.userModel.findById(_id) as ExtendedUserDocument 
+        if (thisUser) await this.cacheManager.set(target, thisUser);
+      } 
+
+      return thisUser;
+    } catch (error) {
+      return null;
+    }
+    
+
+
+  }
+  
+
 
   async createUser(data: CreateUserDto) {
     
@@ -59,10 +85,21 @@ export class UserService {
     }
   }
 
-  async findById(_id: string): Promise<UserDocument> {
-    // todo: implement a cach mechanism here later
-    const x = await this.userModel.findById(_id);
-    return x;
+  async findById(_id: string) {
+    try {
+      const thisUser = await this.readSingleUserFromCache(_id)
+      if (!thisUser) throw new BadRequestException("there is no user with this ID!!")
+
+      thisUser.followerCount = await this.followModel.find({ followeeId: thisUser._id }).countDocuments()
+
+      return thisUser
+    } catch(error) {
+
+      const obj = {
+        'CastError': new BadRequestException("no such user found!!")
+      }
+      throw obj[error.name] || new InternalServerErrorException('oops,this is our fault') 
+    }
   }
 
   async getAllUser(limit:8,page:1) {
@@ -78,32 +115,25 @@ export class UserService {
   }
 
 
-  async getSingleUser(_id: string) {
-   
-    try {
-      const user = await this.userModel.findById(_id) as ExtendedUserDocument 
 
-      if (!user) {
-        throw new BadRequestException("there is no user with this ID!!")
-      }
+  async updateMe(data: updateUserDto, me: UserDocument) {
+    const thisUser = await this.userModel.findById(me._id);
+    
+    Object.entries(data).forEach(([key, value]) => {
+      thisUser[key] = value
+    })
+    await thisUser.save()
 
-
-      user.followerCount = await this.followModel.find({ followeeId: user._id }).countDocuments()
-
-      return user
-    } catch(error) {
-
-      const obj = {
-        'CastError': new BadRequestException("no such user found!!")
-      }
-      throw obj[error.name] || new InternalServerErrorException('oops,this is our fault') 
-    }
-  }
-
-  async updateMe(data:updateUserDto, me:UserDocument) {
-     await this.userModel.findByIdAndUpdate(me._id, data);
+    let target = `user-${String(me._id)}`
+    await this.cacheManager.del(target)
     return {
       msg:"successfully updated your data!!"
     } 
+  }
+
+  async clearCache() {
+   
+    await this.cacheManager.reset();
+    return "ok"
   }
 }
