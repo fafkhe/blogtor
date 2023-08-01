@@ -61,6 +61,7 @@ export class BlogService {
       // singleBlog.likeCount = 22
       singleBlog.likeCount = await  this.likeModel.find({blogId: singleBlog._id}).countDocuments()
 
+      console.log(singleBlog,"/////")
       return singleBlog;
     } catch (error) {
 
