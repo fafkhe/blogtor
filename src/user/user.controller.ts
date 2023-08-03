@@ -1,11 +1,17 @@
 import {
-  Controller, Get, Post, Delete, Patch, Body, UseGuards, Param,Query
+  Controller, Get, Post, Delete, Patch, Body, UseGuards, Param,Query,UploadedFile,Bind
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { AuthGuard } from 'src/gaurds/auth.gaurd';
 import { Serialize } from 'src/interceptors/serialize.interceptors';
 import { UserDto } from './dtos/user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UseInterceptors } from '@nestjs/common';
+import { ParseFilePipe } from '@nestjs/common';
+import { MaxFileSizeValidator } from '@nestjs/common';
+import { FileTypeValidator } from '@nestjs/common';
+import { UploadedFiles } from '@nestjs/common';
 
 
 
@@ -43,5 +49,4 @@ export class UserController {
   clearCache() {
     return this.userService.clearCache()
   }
-  
 }

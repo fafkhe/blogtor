@@ -132,8 +132,7 @@ export class UserService {
   }
 
   async clearCache() {
-   
     await this.cacheManager.reset();
-    return "ok"
+    return "ok!!"
   }
 }

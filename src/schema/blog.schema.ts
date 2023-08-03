@@ -33,7 +33,7 @@ export const BlogSchema = SchemaFactory.createForClass(Blog);
 BlogSchema.methods = {
   _checkIfImAuthor: function (thisUser: UserDocument): void {
 
-    if (!this.authorId.equals(thisUser._id)) throw new BadRequestException("unathorized")
+    if (!this.authorId.equals(thisUser._id)) throw new BadRequestException("unathorized");
  
   },
 }

@@ -8,11 +8,12 @@ import { UserDocument } from 'src/schema/user.schema';
 import { ExtendedBlogDocument } from 'src/schema/blog.schema';
 // import { LikeSchema } from 'src/schema/like.schema';
 import { Like } from 'src/schema/like.schema';
+import { User } from 'src/schema/user.schema';
 
 
 @Injectable()
 export class BlogService {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog> , @InjectModel(Like.name) private likeModel: Model<Like > ) {}
+  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog> , @InjectModel(Like.name) private likeModel: Model<Like > , @InjectModel(User.name) private userModel:Model<User> ) {}
   async createBlog(data:createBlogDto, me:UserDocument){
     if (!data.title || !data.content) throw new BadRequestException("insufficient input");
     const newBlog = await this.blogModel.create({ ...data, user: me._id });
@@ -91,11 +92,23 @@ export class BlogService {
    
    const myBlogs = await this.blogModel.find({ user: me._id }).limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();
    if (!myBlogs) {
-     throw new BadRequestException("no such blogs exist for this User ")
+     throw new BadRequestException("no such blogs exist for this User!! ")
     }
    return {
      data: myBlogs,
      total: count
    }
+ }
+  
+  async blogsByUser(_id:string ,page:number, limit:number , me:UserDocument ) {
+    
+    const thisUser = await this.userModel.findById(_id);
+    if (!thisUser) throw new BadRequestException("no such user found!");
+
+    const theseBlogs = await this.blogModel.find({ user: thisUser._id }).limit(limit).skip(page).populate({ path: "user", select: { password: 0, __v: 0 } }).exec();
+    
+    if (!theseBlogs) throw new BadRequestException("there is no blogs by this user exist !!");
+
+    return theseBlogs;
   }
 }
