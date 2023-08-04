@@ -9,6 +9,8 @@ import { ExtendedBlogDocument } from 'src/schema/blog.schema';
 // import { LikeSchema } from 'src/schema/like.schema';
 import { Like } from 'src/schema/like.schema';
 import { User } from 'src/schema/user.schema';
+import { bloglistQueryDto } from './dto/bloglist-query.dto';
+import { SortOrder } from 'mongoose';
 
 
 @Injectable()
@@ -21,9 +23,24 @@ export class BlogService {
     return newBlog;
   }
   
-  async getAllBlogs(limit:8,page:0) {
+  async getAllBlogs(query: bloglistQueryDto) {
+    
+
+    const page = query.page || 0 ;
+    const limit = query.limit || 10;
+
+    let defaultSort = { createdAt: -1 } as { [key: string]: SortOrder }
+
+    const obj = {
+      'latest': { createdAt: -1 },
+      'oldest': { createdAt: 1 },
+      //  'like': { likeCount: 1 }
+    }
+
+    if (obj[query.sort]) defaultSort = obj[query.sort]
+
     const count = await this.blogModel.find({}).countDocuments().exec();
-    const allBlogs = await this.blogModel.find().limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();
+    const allBlogs = await this.blogModel.find().sort(defaultSort).limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();
     return {
       data: allBlogs,
       total:count,
@@ -85,30 +102,75 @@ export class BlogService {
   }
 
 
- async getMyBlogs( me:UserDocument, page:number, limit:number) {
-   
-   
-    const count = await this.blogModel.find({user: me._id}).countDocuments();
-   
-   const myBlogs = await this.blogModel.find({ user: me._id }).limit(limit).skip(page).populate({ path: "user", select:{password:0 , __v:0}}).exec();
-   if (!myBlogs) {
-     throw new BadRequestException("no such blogs exist for this User!! ")
-    }
-   return {
-     data: myBlogs,
-     total: count
-   }
- }
-  
-  async blogsByUser(_id:string ,page:number, limit:number , me:UserDocument ) {
+  async getMyBlogs(me: UserDocument, query: bloglistQueryDto) {
+
+    const limit = query.limit || 10;
     
+    const page = query.page || 0;
+
+    let defaultSort = { createdAt: -1 } as { [key: string]: SortOrder }
+
+    const obj = {
+      'latest': { createdAt: -1 },
+      'oldest': { createdAt: 1 },
+      //  'like': { likeCount: 1 }
+    }
+
+    if (obj[query.sort]) defaultSort = obj[query.sort]
+
+    const count = await this.blogModel.find({ user: me._id }).countDocuments();
+    
+    const myBlogs = await this.blogModel
+      .find({ user: me._id })
+      .sort(defaultSort)
+      .limit(limit)
+      .skip(page)
+      .populate({ path: "user", select: { password: 0, __v: 0 } })
+      .exec();
+    if (!myBlogs) throw new BadRequestException("no such blogs exist for this User!! ")
+    
+    return {
+      data: myBlogs,
+      total: count
+    }
+  }
+  
+  async blogsByUser(_id: string, query: bloglistQueryDto) {
+    
+    const limit = query.limit || 10;
+    const page = query.page || 0;
+
+    let defaultSort = { createdAt: -1 } as { [key: string]: SortOrder }
+
+    const obj = {
+      'latest': { createdAt: -1 },
+      'oldest': { createdAt: 1 },
+      //  'like': { likeCount: 1 }
+    }
+
+    console.log(query)
+
+    if (obj[query.sort]) defaultSort = obj[query.sort];
+
     const thisUser = await this.userModel.findById(_id);
     if (!thisUser) throw new BadRequestException("no such user found!");
+    
+    const count = await this.blogModel.find({ user: thisUser._id }).countDocuments();
 
-    const theseBlogs = await this.blogModel.find({ user: thisUser._id }).limit(limit).skip(page).populate({ path: "user", select: { password: 0, __v: 0 } }).exec();
+    const theseBlogs = await this.blogModel
+      .find({ user: thisUser._id })
+      .sort(defaultSort)
+      .limit(limit)
+      .skip(page)
+      .populate({ path: "user", select: { password: 0, __v: 0 } })
+      .exec();
     
     if (!theseBlogs) throw new BadRequestException("there is no blogs by this user exist !!");
 
-    return theseBlogs;
+    return {
+      data: theseBlogs,
+      total: count,
+
+    } 
   }
 }

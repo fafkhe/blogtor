@@ -6,6 +6,8 @@ import { User, UserDocument } from 'src/schema/user.schema';
 import { createBlogDto } from './dto/createBlog.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptors';
 import { blogDto } from './dto/blog.dto';
+import { bloglistQueryDto } from './dto/bloglist-query.dto';
+import { LL_BlogDto } from './dto/LL_blog.dto';
 
 
 @Controller('blog')
@@ -19,9 +21,9 @@ export class BlogController {
   }
 
   @Get('/blogs')
-  @UseGuards(AuthGuard)
-  getAllBlogs(@Query() { limit, page }) {
-    return this.blogService.getAllBlogs(limit, page);
+  @Serialize(LL_BlogDto)
+  getAllBlogs(@Query() query:bloglistQueryDto) {
+    return this.blogService.getAllBlogs(query);
   }
 
   @UseGuards(AuthGuard)
@@ -31,32 +33,31 @@ export class BlogController {
     return this.blogService.updateBlogs(_id, body, me)
   }
 
-  @Serialize(blogDto)
-  @UseGuards(AuthGuard)
   @Get("/single/:id")
+  @Serialize(blogDto)
   getSingleBlog(@Param("id") _id: string) {
     return this.blogService.getSingleBlog(_id);
   }
-
-  @UseGuards(AuthGuard)
+  
   @Delete("/:id")
+  @UseGuards(AuthGuard)
   deleteBlog(@Me() me: UserDocument, @Param("id") _id: string) {
     return this.blogService.deleteBlog(_id, me);
     
   }
 
-  @UseGuards(AuthGuard)
   @Get("my-blogs")
-  getMyblogs(@Me() me: UserDocument, @Query() { page, limit }) {
+  @UseGuards(AuthGuard)
+  @Serialize(LL_BlogDto)
+  getMyblogs(@Me() me: UserDocument, @Query() query: bloglistQueryDto) {
    
-    return this.blogService.getMyBlogs(me, page, limit);
+    return this.blogService.getMyBlogs(me, query);
   }
 
-  
-  @UseGuards(AuthGuard)
   @Post("/blogsbyuser")
-  blogByUser(@Body() _id: string, @Query() { limit, page} , @Me() me:UserDocument ) {
-    return this.blogService.blogsByUser(_id, limit, page, me);
+  @Serialize(LL_BlogDto)
+  blogByUser(@Body() _id: string, @Query() query: bloglistQueryDto) {
+    return this.blogService.blogsByUser(_id, query);
     
   }
 }

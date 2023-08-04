@@ -10,7 +10,7 @@ export interface ExtendedBlogDocument extends BlogDocument {
   likeCount: number
 }
 
-@Schema()
+@Schema({ timestamps: true })
 export class Blog {
 
   @Prop()
@@ -23,6 +23,12 @@ export class Blog {
   user: Types.ObjectId
   
   _checkIfImAuthor: Function
+
+  @Prop()
+  createdAt?: Date
+
+  @Prop()
+  updatedAt?: Date
  
   
 }

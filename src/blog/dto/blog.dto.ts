@@ -22,4 +22,10 @@ export class blogDto {
   @Expose()
   likeCount: number;
 
+  @Expose()
+  createdAt?: Date
+
+  @Expose()
+  updatedAt?: Date
+
  }
