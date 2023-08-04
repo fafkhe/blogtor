@@ -10,7 +10,17 @@ import { ExtendedUserDocument } from 'src/schema/user.schema';
 import { Follow } from 'src/schema/follow.schema';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { join } from 'path';
+import { unlinkSync, createWriteStream, mkdirSync, existsSync, mkdir } from 'fs';
 
+
+const UID = () => `${Date.now()}${String(Math.random()).slice(3, 8)}`
+const pathMaker = (filename: string): string => join(process.cwd(), 'public', filename)
+const removeFile = (path: string) => {
+  try {
+    unlinkSync(path)
+  } catch (error) {}
+}
 
 @Injectable()
 export class UserService {
@@ -134,5 +144,29 @@ export class UserService {
   async clearCache() {
     await this.cacheManager.reset();
     return "ok!!"
+  }
+
+  async uploadAvatar(me: UserDocument, file: Express.Multer.File) {
+    
+    if (!existsSync(join(process.cwd(), 'public'))) mkdirSync(join(process.cwd(), 'public'))
+    
+    const ext = file.mimetype.split('/')[1];
+    const filename = `${UID()}.${ext}`;
+
+    const path = pathMaker(filename);
+    createWriteStream(path).write(Buffer.from(file.buffer));
+
+    await this.userModel.findByIdAndUpdate(me._id, { $set: { avatar: filename } });
+    
+    let target = `user-${String(me._id)}`
+    await this.cacheManager.del(target)
+
+    console.log(file);
+    console.log("ext", ext)
+    console.log("path", path)
+    console.log(me)
+
+    return "ok"
+
   }
 }

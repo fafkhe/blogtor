@@ -10,4 +10,8 @@ export class UserDto {
 
   @Expose()
   followerCount: number
- }
+
+  @Expose()
+  avatar: string
+
+}

@@ -3,15 +3,6 @@ import { HydratedDocument } from 'mongoose';
 import { compareSync, hashSync, genSaltSync } from "bcrypt";
 import { BadRequestException } from '@nestjs/common';
 
-
-
-export type UserDocument = HydratedDocument<User>;
-
-export interface ExtendedUserDocument extends UserDocument {
-  followerCount: number
-}
-
-
 @Schema()
 export class User {
   
@@ -21,34 +12,28 @@ export class User {
   @Prop()
   email: string;
   
+  @Prop()
+  password: string;
 
   @Prop()
- 
-  password: string;
+  avatar: string;
 
   // @Prop({ type: [String], required: true })
   // permissions: string[];
 
-  
-  
   _checkPassword: Function
+}
+
+export type UserDocument = HydratedDocument<User>;
+
+export interface ExtendedUserDocument extends UserDocument {
+  followerCount: number
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.pre("save", async function (next) {
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
-  console.log("pre save is called")
+
   if (!this.isModified("password")) return next();
   const salt = genSaltSync(11);
   const hash = hashSync(this.password, salt);

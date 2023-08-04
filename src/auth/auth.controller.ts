@@ -16,6 +16,7 @@ export class AuthController {
    @Serialize(UserDto)
    me(@Me() me: ExtendedUserDocument) {
     
+    console.log(me)
     return me;
 
    }

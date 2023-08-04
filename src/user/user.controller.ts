@@ -12,7 +12,8 @@ import { ParseFilePipe } from '@nestjs/common';
 import { MaxFileSizeValidator } from '@nestjs/common';
 import { FileTypeValidator } from '@nestjs/common';
 import { UploadedFiles } from '@nestjs/common';
-
+import { UserDocument } from 'src/schema/user.schema';
+import { Me } from 'src/decorators/me.decorator';
 
 
 
@@ -40,7 +41,7 @@ export class UserController {
   }
   
   @Serialize(UserDto)
-  @Get("/:id")
+  @Get("/singleUser/:id")
   singleUser(@Param('id') _id:string) {
     return this.userService.findById(_id)
   }
@@ -49,4 +50,15 @@ export class UserController {
   clearCache() {
     return this.userService.clearCache()
   }
+
+  @Post("/upload-avatar")
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor("avatar"))
+  uploadAvatar(@Me() me: UserDocument, @UploadedFile() file: Express.Multer.File) { console.log("salam")
+    return this.userService.uploadAvatar(me,file)
+    
+  }
+  
+
+  
 }
