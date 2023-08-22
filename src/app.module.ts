@@ -15,16 +15,12 @@ import { config } from 'dotenv';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
-
 config();
-
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-
       rootPath: join(process.cwd(),"public")
-
     }),
     ConfigModule.forRoot({
       isGlobal: true
@@ -43,7 +39,7 @@ config();
         commandsQueueMaxLength: 10_000,
         socket: {
           host: process.env.REDIS_HOST,
-          port: process.env.REDIS_PORT as any,
+          port: +process.env.REDIS_PORT,
         }
       })
     }),

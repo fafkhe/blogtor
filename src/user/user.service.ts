@@ -49,8 +49,6 @@ export class UserService {
     } catch (error) {
       return null;
     }
-    
-
 
   }
   
@@ -58,25 +56,29 @@ export class UserService {
 
   async createUser(data: CreateUserDto) {
     
-    data.email = data.email.toLowerCase()
-
-    if (!data.email || !data.password || !data.name) {
-      throw new BadRequestException()
+    try {
+      
+      if (!data.email || !data.password || !data.name) {
+        throw new BadRequestException()
+      }
+      data.email = data.email.toLowerCase()
+  
+      const existingUser = await this.userModel.findOne({ email: data.email });
+  
+      if (existingUser) throw new BadRequestException('this User already exist');
+  
+      const thisUser = await this.userModel.create(data);
+  
+      const token = this.jwtService.sign({ _id: thisUser._id });
+  
+      return {
+        token
+      }
+    } catch (error) {
+      console.log(error)
     }
 
-    const existingUser = await this.userModel.findOne({ email: data.email });
-
-    if (existingUser) throw new BadRequestException('this User already exist');
-
-    const thisUser = await this.userModel.create(data);
-
-    const token = this.jwtService.sign({ _id: thisUser._id });
-
-    return {
-      token
-    }
-
-}
+  }
 
   async login(data: CreateUserDto) {
     if (!data.email || !data.password ) {
@@ -117,7 +119,7 @@ export class UserService {
     const count = await this.userModel.countDocuments({}).exec();
     const total = Math.floor((count - 1) / limit) + 1;
     const users = await this.userModel.find().limit(limit).skip(page).exec();
-    console.log(users,"users")
+
     return {
       data: users,
       page_total: total

@@ -6,9 +6,6 @@ import { UserDocument } from 'src/schema/user.schema';
 
 export type BlogDocument = HydratedDocument<Blog>
 
-export interface ExtendedBlogDocument extends BlogDocument {
-  likeCount: number
-}
 
 @Schema({ timestamps: true })
 export class Blog {
@@ -23,6 +20,9 @@ export class Blog {
   user: Types.ObjectId
   
   _checkIfImAuthor: Function
+
+  @Prop()
+  likeCount: number;
 
   @Prop()
   createdAt?: Date

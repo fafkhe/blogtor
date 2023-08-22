@@ -7,13 +7,12 @@ import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { User,UserSchema } from 'src/schema/user.schema';
 
-
-
-
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Follow.name, schema: FollowSchema }]),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: Follow.name, schema: FollowSchema },
+      { name: User.name, schema: UserSchema }
+    ]),
     UserModule,
     AuthModule
 

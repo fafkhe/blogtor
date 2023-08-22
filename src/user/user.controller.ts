@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Delete, Patch, Body, UseGuards, Param,Query,UploadedFile,Bind
+  Controller, Get, Post, Body, UseGuards, Param,Query,UploadedFile
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create.user.dto';
@@ -8,10 +8,7 @@ import { Serialize } from 'src/interceptors/serialize.interceptors';
 import { UserDto } from './dtos/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseInterceptors } from '@nestjs/common';
-import { ParseFilePipe } from '@nestjs/common';
-import { MaxFileSizeValidator } from '@nestjs/common';
-import { FileTypeValidator } from '@nestjs/common';
-import { UploadedFiles } from '@nestjs/common';
+
 import { UserDocument } from 'src/schema/user.schema';
 import { Me } from 'src/decorators/me.decorator';
 
@@ -24,10 +21,8 @@ export class UserController {
   @Post("/signup")
    signup(@Body() body: CreateUserDto) {
     return  this.userService.createUser(body);
-    
   }
   
-
   @Post("/login")
    login(@Body() body:CreateUserDto) {
     return  this.userService.login(body);
@@ -58,7 +53,5 @@ export class UserController {
     return this.userService.uploadAvatar(me,file)
     
   }
-  
 
-  
 }

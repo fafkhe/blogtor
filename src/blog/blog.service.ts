@@ -5,36 +5,37 @@ import { Model } from 'mongoose';
 import { createBlogDto } from './dto/createBlog.dto';
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { UserDocument } from 'src/schema/user.schema';
-import { ExtendedBlogDocument } from 'src/schema/blog.schema';
-// import { LikeSchema } from 'src/schema/like.schema';
-import { Like } from 'src/schema/like.schema';
 import { User } from 'src/schema/user.schema';
 import { bloglistQueryDto } from './dto/bloglist-query.dto';
-import { SortOrder } from 'mongoose';
 
+import { customSortType, SortObject } from './blog.service.types';
 
 @Injectable()
 export class BlogService {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<Blog> , @InjectModel(Like.name) private likeModel: Model<Like > , @InjectModel(User.name) private userModel:Model<User> ) {}
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<Blog>,
+    @InjectModel(User.name) private userModel: Model<User>
+  ) { }
+  
   async createBlog(data:createBlogDto, me:UserDocument){
     if (!data.title || !data.content) throw new BadRequestException("insufficient input");
     const newBlog = await this.blogModel.create({ ...data, user: me._id });
     console.log("me", me)
     return newBlog;
   }
-  
+
   async getAllBlogs(query: bloglistQueryDto) {
     
 
     const page = query.page || 0 ;
     const limit = query.limit || 10;
 
-    let defaultSort = { createdAt: -1 } as { [key: string]: SortOrder }
+    let defaultSort: SortObject = { createdAt: -1 }
 
-    const obj = {
+    const obj: customSortType = {
       'latest': { createdAt: -1 },
       'oldest': { createdAt: 1 },
-      //  'like': { likeCount: 1 }
+      'like': { likeCount: -1 }
     }
 
     if (obj[query.sort]) defaultSort = obj[query.sort]
@@ -45,11 +46,10 @@ export class BlogService {
       data: allBlogs,
       total:count,
     }
-    
-   
   }
 
   async updateBlogs(_id: string, data: createBlogDto, me: UserDocument): Promise<BlogDocument> {
+    
     try {
       const blog = await this.blogModel.findById(_id)
       if (!blog) throw new BadRequestException("no such blog found")
@@ -66,20 +66,16 @@ export class BlogService {
     }
   
   }
-  async getSingleBlog(_id: string): Promise<ExtendedBlogDocument> {
+  async getSingleBlog(_id: string): Promise<BlogDocument> {
     
     try {
 
-      const singleBlog = await this.blogModel.findById(_id)
-        .populate({ path: "user", select: { password: 0, __v: 0 } })
-        .exec() as ExtendedBlogDocument;
+      const singleBlog = await this.blogModel.findById(_id).populate({ path: "user", select: { password: 0, __v: 0 } }).exec();
       
       if (!singleBlog) throw new BadRequestException("no such blog found!!")
       
-      // singleBlog.likeCount = 22
-      singleBlog.likeCount = await  this.likeModel.find({blogId: singleBlog._id}).countDocuments()
+     
 
-      console.log(singleBlog,"/////")
       return singleBlog;
     } catch (error) {
 
@@ -108,14 +104,13 @@ export class BlogService {
     
     const page = query.page || 0;
 
-    let defaultSort = { createdAt: -1 } as { [key: string]: SortOrder }
+    let defaultSort: SortObject = { createdAt: -1 }
 
-    const obj = {
+    const obj: customSortType = {
       'latest': { createdAt: -1 },
       'oldest': { createdAt: 1 },
-      //  'like': { likeCount: 1 }
+      'like': { likeCount: -1 }
     }
-
     if (obj[query.sort]) defaultSort = obj[query.sort]
 
     const count = await this.blogModel.find({ user: me._id }).countDocuments();
@@ -140,12 +135,12 @@ export class BlogService {
     const limit = query.limit || 10;
     const page = query.page || 0;
 
-    let defaultSort = { createdAt: -1 } as { [key: string]: SortOrder }
+    let defaultSort: SortObject = { createdAt: -1 }
 
-    const obj = {
+    const obj: customSortType = {
       'latest': { createdAt: -1 },
       'oldest': { createdAt: 1 },
-      //  'like': { likeCount: 1 }
+      'like': { likeCount: -1 }
     }
 
     console.log(query)

@@ -13,6 +13,7 @@ interface ClassConstuctor {
   new (...args: any[]): {}
 }
 
+
 export class SerializeInterceptor implements NestInterceptor {
 
   constructor(private dto: ClassConstuctor) {};

@@ -9,8 +9,10 @@ import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+    MongooseModule.forFeature([
+      { name: Like.name, schema: LikeSchema },
+      { name: Blog.name, schema: BlogSchema }
+    ]),
     BlogModule,
     UserModule
 ],

@@ -8,7 +8,8 @@ import { jwtAuthMiddleware } from './jwtAuth.middleware';
 
 @Module({
   imports: [
-    UserModule, JwtModule.register({
+    UserModule,
+    JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
     })

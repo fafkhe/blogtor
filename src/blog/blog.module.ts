@@ -9,10 +9,12 @@ import { Like, LikeSchema } from 'src/schema/like.schema';
  
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
-    MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
+    MongooseModule.forFeature([
+      { name: Blog.name, schema: BlogSchema },
+      { name: User.name, schema: UserSchema },
+      { name: Like.name, schema: LikeSchema }
+    ]),
     UserModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
   ],
   providers: [BlogService],
   controllers: [BlogController],

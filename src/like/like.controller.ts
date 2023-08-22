@@ -12,7 +12,7 @@ export class LikeController {
   
 
   @UseGuards(AuthGuard)
-  @Get("/submit")
+  @Post("/submit")
   like(@Body() body:createLikeDto ,@Me()  me:UserDocument) {
     
     return this.likeService.LikeAndDisLike(body , me);
