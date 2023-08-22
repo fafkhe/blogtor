@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+  redis:
+    image: redis/redis-stack-server:latest
+    restart: always
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+  app:
+    container_name: app
+    build:
+      dockerfile: Dockerfile
+      context: .
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+    environment:
+      - DB_URI=${DB_URI}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
