@@ -39,7 +39,7 @@ UserSchema.pre("save", async function (next) {
   const hash = hashSync(this.password, salt);
   this.password = hash;
   next();
-
+ 
 });
 
 UserSchema.methods = {
