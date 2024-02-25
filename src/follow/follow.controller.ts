@@ -1,20 +1,43 @@
-import { Controller,  Post , Body, Param , Get, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Get,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { FollowService } from './follow.service';
 import { Me } from 'src/decorators/me.decorator';
 import { UserDocument } from 'src/schema/user.schema';
 import { AuthGuard } from 'src/gaurds/auth.gaurd';
-
-
+import { followlistQueryDto } from './dtos/followlistQueryDto';
+import { Serialize } from 'src/interceptors/serialize.interceptors';
+import { LL_followDto } from './dtos/LL_folllow.dto';
 
 @Controller('follow')
 export class FollowController {
-  constructor(private followService: FollowService) { }
-  
+  constructor(private followService: FollowService) {}
+
   @UseGuards(AuthGuard)
-  @Get("/:id")
-  follow(@Param("id") _id:string , @Me() me: UserDocument ) {
-    
-    return this.followService.followAndUnfollow(_id , me);
+  @Get('/:id')
+  follow(@Param('id') _id: string, @Me() me: UserDocument) {
+    return this.followService.followAndUnfollow(_id, me);
   }
 
+  @UseGuards(AuthGuard)
+  @Serialize(LL_followDto)
+  @Post('/getmyrequest')
+  getMyFollowRequest(
+    @Me() me: UserDocument,
+    @Query() query: followlistQueryDto,
+  ) {
+    return this.followService.getMyFollowRequest(me, query);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/:id')
+  request_follow(@Param('id') _id: string, @Me() me: UserDocument) {
+    return this.followService.request(_id, me);
+  }
 }

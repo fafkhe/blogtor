@@ -18,9 +18,6 @@ export class User {
   @Prop()
   avatar: string;
 
-  // @Prop({ type: [String], required: true })
-  // permissions: string[];
-
   _checkPassword: Function
 }
 

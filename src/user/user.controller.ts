@@ -72,12 +72,12 @@ export class UserController {
   }
 
   @Post('/resetpass2')
-  resetPass2(@Body() body: resetPassword_stepTwo_dto) {
+  reset_password_step_two(@Body() body: resetPassword_stepTwo_dto) {
     return this.userService.resetPass2(body);
   }
 
   @Post('/resetpass3')
-  resetPass3(@Body() body: resetPassword_stepThree_dto) {
+  reset_password_step_three(@Body() body: resetPassword_stepThree_dto) {
     return this.userService.resetpass3(body);
   }
 }
