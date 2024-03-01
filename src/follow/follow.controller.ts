@@ -6,6 +6,7 @@ import {
   Get,
   UseGuards,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { FollowService } from './follow.service';
 import { Me } from 'src/decorators/me.decorator';
@@ -15,6 +16,7 @@ import { followlistQueryDto } from './dtos/followlistQueryDto';
 import { Serialize } from 'src/interceptors/serialize.interceptors';
 import { LL_followDto } from './dtos/LL_folllow.dto';
 import { handleRequestDto } from './dtos/handleRequest.dto';
+import { unfollowDto } from './dtos/unfollow.dto';
 
 @Controller('follow')
 export class FollowController {
@@ -37,14 +39,20 @@ export class FollowController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/:id')
-  followRequest(@Param('id') _id: string, @Me() me: UserDocument) {
-    return this.followService.request(_id, me);
-  }
-
-  @UseGuards(AuthGuard)
   @Post('handle_request')
   handleRequest(@Body() body: handleRequestDto, @Me() me: UserDocument) {
     return this.followService.handle(me, body);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('unfollow')
+  unfollow(@Body() body: unfollowDto, @Me() me: UserDocument) {
+    return this.followService.unfollow(me, body);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/:id')
+  followRequest(@Param('id') _id: string, @Me() me: UserDocument) {
+    return this.followService.request(_id, me);
   }
 }
