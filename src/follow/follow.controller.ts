@@ -14,6 +14,7 @@ import { AuthGuard } from 'src/gaurds/auth.gaurd';
 import { followlistQueryDto } from './dtos/followlistQueryDto';
 import { Serialize } from 'src/interceptors/serialize.interceptors';
 import { LL_followDto } from './dtos/LL_folllow.dto';
+import { handleRequestDto } from './dtos/handleRequest.dto';
 
 @Controller('follow')
 export class FollowController {
@@ -37,7 +38,13 @@ export class FollowController {
 
   @UseGuards(AuthGuard)
   @Post('/:id')
-  request_follow(@Param('id') _id: string, @Me() me: UserDocument) {
+  followRequest(@Param('id') _id: string, @Me() me: UserDocument) {
     return this.followService.request(_id, me);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('handle_request')
+  handleRequest(@Body() body: handleRequestDto, @Me() me: UserDocument) {
+    return this.followService.handle(me, body);
   }
 }

@@ -5,12 +5,10 @@ export type Followdocument = HydratedDocument<Follow>;
 
 @Schema()
 export class Follow {
-  @Prop()
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   followeeId: Types.ObjectId;
 
-
-
-  @Prop()
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   followerId: Types.ObjectId;
 }
 

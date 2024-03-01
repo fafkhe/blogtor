@@ -11,6 +11,7 @@ import { User } from 'src/schema/user.schema';
 import { Follow_Request } from 'src/schema/follow&request.schema';
 import { followlistQueryDto } from './dtos/followlistQueryDto';
 import { SortObject } from 'src/blog/blog.service.types';
+import { handleRequestDto } from './dtos/handleRequest.dto';
 
 @Injectable()
 export class FollowService {
@@ -120,5 +121,27 @@ export class FollowService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async handle(me: UserDocument, body: handleRequestDto) {
+    const userId = body.userId;
+    const isApproving = body.isapproving;
+
+    const thisFollowRequest = await this.followRequestModel.findOne({
+      requester: userId,
+      target: me._id,
+    });
+
+    if (!thisFollowRequest)
+ 
+    if (isApproving) {
+      await this.followModel.create({
+        followerId: userId,
+        followeeId: me._id,
+      });
+    }
+    await this.followRequestModel.findByIdAndDelete(thisFollowRequest._id);
+
+    return 'ok';
   }
 }
