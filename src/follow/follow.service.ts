@@ -12,7 +12,7 @@ import { Follow_Request } from 'src/schema/follow&request.schema';
 import { followlistQueryDto } from './dtos/followlistQueryDto';
 import { SortObject } from 'src/blog/blog.service.types';
 import { handleRequestDto } from './dtos/handleRequest.dto';
-import { unfollowDto } from './dtos/unfollow.dto';
+import { unfollowRemoveDto } from './dtos/unfollow&remov.dto';
 
 @Injectable()
 export class FollowService {
@@ -147,7 +147,7 @@ export class FollowService {
     return 'ok';
   }
 
-  async unfollow(me: UserDocument, body: unfollowDto) {
+  async unfollow(me: UserDocument, body: unfollowRemoveDto) {
     const userId = body.userId;
 
     const thisFollow = await this.followModel.findOne({
@@ -156,6 +156,21 @@ export class FollowService {
     });
 
     if (!thisFollow) throw new BadRequestException('no such follow exists!!');
+
+    await this.followModel.findByIdAndDelete(thisFollow._id);
+
+    return 'ok';
+  }
+
+  async remove(me: UserDocument, body: unfollowRemoveDto) {
+    const userId = body.userId;
+
+    const thisFollow = await this.followModel.findOne({
+      followeeId: me._id,
+      followerId: userId,
+    });
+
+    if (!thisFollow) throw new BadRequestException('no such user exists!!');
 
     await this.followModel.findByIdAndDelete(thisFollow._id);
 

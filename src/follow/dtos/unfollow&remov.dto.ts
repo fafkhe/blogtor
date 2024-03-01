@@ -1,7 +1,7 @@
 import { UserDto } from 'src/user/dtos/user.dto';
 import { IsString } from 'class-validator';
 
-export class unfollowDto {
+export class unfollowRemoveDto {
   @IsString()
   userId: string;
 }
