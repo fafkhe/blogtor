@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -155,7 +156,7 @@ export class FollowService {
       followerId: me._id,
     });
 
-    if (!thisFollow) throw new BadRequestException('no such follow exists!!');
+    if (!thisFollow) throw new BadRequestException('no such follow exist!!');
 
     await this.followModel.findByIdAndDelete(thisFollow._id);
 
@@ -170,10 +171,59 @@ export class FollowService {
       followerId: userId,
     });
 
-    if (!thisFollow) throw new BadRequestException('no such user exists!!');
+    if (!thisFollow) throw new BadRequestException('no such user found!');
 
     await this.followModel.findByIdAndDelete(thisFollow._id);
 
     return 'ok';
+  }
+
+  async getFollowersById(
+    me: UserDocument,
+    userId: string,
+    query: followlistQueryDto,
+  ) {
+    const limit = query.limit || 10;
+    const page = query.page || 0;
+
+    console.log('salam salam salam ');
+
+    let defaultSort: SortObject = { createdAt: -1 };
+
+    let shouldReturn = false;
+
+    const findoptions = { followerId: me._id };
+    const count = await this.followRequestModel
+      .find(findoptions)
+      .countDocuments();
+
+    if (String(me._id) == userId) shouldReturn = true;
+
+    if (shouldReturn === false) {
+      const existingFollow = await this.followModel.findOne({
+        followeeId: userId,
+        followerId: me._id,
+      });
+
+      if (existingFollow) shouldReturn = true;
+    }
+    if (!shouldReturn) throw new ForbiddenException();
+
+    const followers = await this.followModel
+      .find({
+        followeeId: userId,
+      })
+      .sort(defaultSort)
+      .limit(limit)
+      .skip(page * limit)
+      .populate([{ path: 'followerId', select: { password: 0, __v: 0 } }])
+      .exec();
+
+    console.log(followers, 'followers');
+
+    return {
+      data: followers,
+      total: count
+    };
   }
 }
