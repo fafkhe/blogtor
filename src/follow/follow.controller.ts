@@ -23,11 +23,6 @@ import { FollowDto, FollowingDto } from './dtos/follow.dto';
 export class FollowController {
   constructor(private followService: FollowService) {}
 
-  @UseGuards(AuthGuard)
-  @Get('followunfollow/:id')
-  follow(@Param('id') _id: string, @Me() me: UserDocument) {
-    return this.followService.followAndUnfollow(_id, me);
-  }
 
   @UseGuards(AuthGuard)
   @Serialize(LL_followDto)
