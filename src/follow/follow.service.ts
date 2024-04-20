@@ -84,7 +84,7 @@ export class FollowService {
 
       return 'ok';
     } catch (error) {
-      console.log(error, 'error is here ');
+      console.log(error.name, 'error is here ');
       const obj = {
         CastError: new BadRequestException('no such user found!!'),
       };
@@ -186,41 +186,93 @@ export class FollowService {
     const limit = query.limit || 10;
     const page = query.page || 0;
 
-    let defaultSort: SortObject = { createdAt: -1 };
+    try {
+      let defaultSort: SortObject = { createdAt: -1 };
 
-    let shouldReturn = false;
+      let shouldReturn = false;
 
-    const findoptions = { followerId: me._id };
-    const count = await this.followRequestModel
-      .find(findoptions)
-      .countDocuments();
+      const findoptions = { followerId: me._id };
+      const count = await this.followRequestModel
+        .find(findoptions)
+        .countDocuments();
 
-    if (String(me._id) == userId) shouldReturn = true;
+      if (String(me._id) == userId) shouldReturn = true;
 
-    if (shouldReturn === false) {
-      const existingFollow = await this.followModel.findOne({
-        followeeId: userId,
-        followerId: me._id,
-      });
+      if (shouldReturn === false) {
+        const existingFollow = await this.followModel.findOne({
+          followeeId: userId,
+          followerId: me._id,
+        });
 
-      if (existingFollow) shouldReturn = true;
+        if (existingFollow) shouldReturn = true;
+      }
+      if (!shouldReturn) throw new ForbiddenException();
+
+      const followers = await this.followModel
+        .find({
+          followeeId: userId,
+        })
+        .sort(defaultSort)
+        .limit(limit)
+        .skip(page * limit)
+        .populate([{ path: 'followerId', select: { password: 0, __v: 0 } }])
+        .exec();
+
+      return {
+        data: followers,
+        total: count,
+      };
+    } catch (error) {
+      console.log(error.name, 'this is error');
     }
-    if (!shouldReturn) throw new ForbiddenException();
+  }
+  async getFollowingById(
+    me: UserDocument,
+    userId: string,
+    query: followlistQueryDto,
+  ) {
+    const limit = query.limit || 10;
+    const page = query.page || 0;
 
-    const followers = await this.followModel
-      .find({
-        followeeId: userId,
-      })
-      .sort(defaultSort)
-      .limit(limit)
-      .skip(page * limit)
-      .populate([{ path: 'followerId', select: { password: 0, __v: 0 } }])
-      .exec();
+    try {
+      let defaultSort: SortObject = { createdAt: -1 };
 
+      let shouldReturn = false;
 
-    return {
-      data: followers,
-      total: count
-    };
+      const findoptions = { followerId: me._id };
+      const count = await this.followRequestModel
+        .find(findoptions)
+        .countDocuments();
+
+      if (String(me._id) == userId) shouldReturn = true;
+
+      if (shouldReturn === false) {
+        const existingFollow = await this.followModel.findOne({
+          followeeId: userId,
+          followerId: me._id,
+        });
+
+        if (existingFollow) shouldReturn = true;
+      }
+      if (!shouldReturn) throw new ForbiddenException();
+
+      const followers = await this.followModel
+        .find({
+          followerId: userId,
+        })
+
+        .sort(defaultSort)
+        .limit(limit)
+        .skip(page * limit)
+        .populate([{ path: 'followeeId', select: { password: 0, __v: 0 } }])
+        .exec();
+
+      return {
+        data: followers,
+        total: count,
+      };
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

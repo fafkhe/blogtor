@@ -17,14 +17,14 @@ import { Serialize } from 'src/interceptors/serialize.interceptors';
 import { LL_followDto } from './dtos/LL_folllow.dto';
 import { handleRequestDto } from './dtos/handleRequest.dto';
 import { unfollowRemoveDto } from './dtos/unfollow&remov.dto';
-import { FollowDto } from './dtos/follow.dto';
+import { FollowDto, FollowingDto } from './dtos/follow.dto';
 
 @Controller('follow')
 export class FollowController {
   constructor(private followService: FollowService) {}
 
   @UseGuards(AuthGuard)
-  @Get('/:id')
+  @Get('followunfollow/:id')
   follow(@Param('id') _id: string, @Me() me: UserDocument) {
     return this.followService.followAndUnfollow(_id, me);
   }
@@ -61,6 +61,16 @@ export class FollowController {
   @Post('remove')
   removeFollower(@Me() me: UserDocument, @Body() body: unfollowRemoveDto) {
     return this.followService.remove(me, body);
+  }
+  @UseGuards(AuthGuard)
+  @Post('getFollowing')
+  getFollowing(
+    @Me() me: UserDocument,
+    @Body() body: FollowingDto,
+    @Query() query: followlistQueryDto,
+  ) {
+    console.log('salam');
+    return this.followService.getFollowingById(me, body.followerId, query);
   }
 
   @UseGuards(AuthGuard)
